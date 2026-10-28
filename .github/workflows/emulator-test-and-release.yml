@@ -33,12 +33,15 @@ jobs:
           cd rdc_engine
           chmod +x ./download-prebuilt-dependencies.sh
           ./download-prebuilt-dependencies.sh
+          
+          # Fix Maven Central resolution for sqlcipher AAR
+          sed -i 's/implementation (name: "android-database-sqlcipher-4.5.4", ext: "aar")/implementation "net.zetetic:android-database-sqlcipher:4.5.4@aar"/' common/build.gradle
 
       - name: Compile and Sign Real RDP Release APK
         working-directory: rdc_engine
         run: |
           chmod +x gradlew
-          ./gradlew :freeaRDP-app:assembleRelease --no-daemon --parallel
+          ./gradlew :freeaRDP-app:assembleRelease --no-daemon --parallel --stacktrace
           
           mkdir -p ../output_apks
           RAW_APK=$(find freeaRDP-app/build/outputs/apk -name "*.apk" | head -n 1)
