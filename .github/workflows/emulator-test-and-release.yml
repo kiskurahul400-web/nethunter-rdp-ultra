@@ -100,51 +100,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          script: |
-            echo "Waiting for Android Emulator device readiness..."
-            adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done'
-            echo "Android Emulator is ready and fully booted!"
-
-            # Select APK for emulator (universal or x86_64)
-            TEST_APK=$(find output_apks -name "*Universal*.apk" -o -name "*x86_64*.apk" -o -name "signed_*.apk" | head -n 1)
-            echo "Installing selected APK on Android Emulator: $TEST_APK"
-            adb install -r "$TEST_APK"
-            
-            # Clear logcat
-            adb logcat -c
-            
-            # Step 1: Launch Main Connection Grid Activity
-            echo "Launching ConnectionGridActivity on Android Emulator..."
-            adb shell am start -n com.iiordanov.freeaRDP/com.undatech.opaque.ConnectionGridActivity
-            sleep 7
-            
-            # Verify Process is Running
-            echo "Checking process table in emulator:"
-            adb shell ps -A | grep -i "freeaRDP" || adb shell ps | grep -i "freeaRDP"
-            APP_PID=$(adb shell pidof com.iiordanov.freeaRDP || true)
-            echo "Running App PID: $APP_PID"
-            
-            # Capture Screenshot of running app on Android Emulator
-            mkdir -p test_artifacts
-            adb exec-out screencap -p > test_artifacts/emulator_running_screen.png
-            ls -lh test_artifacts/emulator_running_screen.png
-
-            # Step 2: Open Connection Details Screen (where user enters IP/password)
-            echo "Testing connection profile creation activity..."
-            adb shell am start -n com.iiordanov.freeaRDP/com.iiordanov.bVNC.aRDP || true
-            sleep 5
-            adb exec-out screencap -p > test_artifacts/emulator_connection_screen.png
-            ls -lh test_artifacts/emulator_connection_screen.png
-            
-            # Step 3: Verify Logcat for Zero Fatal Crashes
-            echo "Inspecting Logcat for errors:"
-            if adb logcat -d | grep -E -A 5 "FATAL EXCEPTION" | grep "com.iiordanov.freeaRDP"; then
-              echo "Error: Fatal crash detected in emulator for com.iiordanov.freeaRDP!"
-              adb logcat -d | grep -E -A 15 "FATAL EXCEPTION"
-              exit 1
-            else
-              echo "SUCCESS: App launched cleanly with ZERO fatal crashes on Android 14/15/16 Emulator!"
-            fi
+          script: bash ./run-emulator-test.sh
 
       - name: Upload Emulator Test Proof Screenshots
         uses: actions/upload-artifact@v4
