@@ -34,7 +34,7 @@
     </FrameLayout>
 
     <!-- Minimized Floating Pill to re-open SuperBar -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_restore_superbar"
         android:layout_width="48dp"
         android:layout_height="32dp"

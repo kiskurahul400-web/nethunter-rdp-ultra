@@ -19,45 +19,45 @@
         android:gravity="center"
         android:layout_marginEnd="4dp" />
 
-    <!-- Hacker Modifier Keys (KeX Standard) -->
-    <Button
+    <!-- Hacker Modifier Keys (KeX Standard - AppCompatButton prevents MaterialButton background crash on Android 14/15/16) -->
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_esc"
         style="@style/SuperBarKey"
         android:text="ESC" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_tab"
         style="@style/SuperBarKey"
         android:text="TAB" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_ctrl"
         style="@style/SuperBarKey"
         android:text="CTRL" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_alt"
         style="@style/SuperBarKey"
         android:text="ALT" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_shift"
         style="@style/SuperBarKey"
         android:text="SHIFT" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_win"
         style="@style/SuperBarKey"
         android:text="WIN"
         android:textColor="@color/kali_accent" />
 
     <!-- Shortcuts / Extra Actions -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_del"
         style="@style/SuperBarKey"
         android:text="DEL" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_taskmgr"
         style="@style/SuperBarKey"
         android:text="CAD"
@@ -65,28 +65,28 @@
         android:textSize="9sp" />
 
     <!-- Navigation / Arrows -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_up"
         style="@style/SuperBarKey"
         android:text="▲" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_down"
         style="@style/SuperBarKey"
         android:text="▼" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_left"
         style="@style/SuperBarKey"
         android:text="◀" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_right"
         style="@style/SuperBarKey"
         android:text="▶" />
 
     <!-- Soft Keyboard Toggle -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_toggle_kbd"
         style="@style/SuperBarKey"
         android:text="⌨"
@@ -94,7 +94,7 @@
         android:textSize="14sp" />
 
     <!-- Minimize / Collapse Bar -->
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_collapse"
         style="@style/SuperBarKey"
         android:text="✕"

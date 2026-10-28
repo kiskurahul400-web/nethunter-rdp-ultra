@@ -119,7 +119,13 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.connecting_msg, Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(this, RdpSessionActivity.class);
-        intent.putExtra("RDP_CONFIG", config);
+        intent.putExtra("EXTRA_HOST", host);
+        intent.putExtra("EXTRA_PORT", port);
+        intent.putExtra("EXTRA_USER", user);
+        intent.putExtra("EXTRA_PASS", pass);
+        intent.putExtra("EXTRA_DOMAIN", domain);
+        intent.putExtra("EXTRA_PRESET", preset.ordinal());
+        intent.putExtra("EXTRA_INPUT_MODE", inputMode.ordinal());
         startActivity(intent);
     }
 }

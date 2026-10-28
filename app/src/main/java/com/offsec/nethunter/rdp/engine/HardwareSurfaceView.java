@@ -131,23 +131,37 @@ public class HardwareSurfaceView extends SurfaceView implements SurfaceHolder.Ca
 
             Canvas canvas = null;
             try {
-                // Hardware-accelerated surface lock
-                canvas = surfaceHolder.lockHardwareCanvas();
-                if (canvas != null) {
-                    canvas.drawColor(Color.BLACK);
-                    synchronized (frameLock) {
-                        if (remoteFramebuffer != null && !remoteFramebuffer.isRecycled()) {
-                            canvas.drawBitmap(remoteFramebuffer, srcRect, dstRect, paint);
+                if (surfaceHolder != null && surfaceHolder.getSurface() != null && surfaceHolder.getSurface().isValid()) {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        try {
+                            canvas = surfaceHolder.lockHardwareCanvas();
+                        } catch (Throwable t) {
+                            canvas = null;
+                        }
+                    }
+                    if (canvas == null) {
+                        try {
+                            canvas = surfaceHolder.lockCanvas();
+                        } catch (Throwable t) {
+                            canvas = null;
+                        }
+                    }
+                    if (canvas != null) {
+                        canvas.drawColor(Color.BLACK);
+                        synchronized (frameLock) {
+                            if (remoteFramebuffer != null && !remoteFramebuffer.isRecycled()) {
+                                canvas.drawBitmap(remoteFramebuffer, srcRect, dstRect, paint);
+                            }
                         }
                     }
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 Log.e(TAG, "Hardware render error: " + e.getMessage());
             } finally {
-                if (canvas != null) {
+                if (canvas != null && surfaceHolder != null) {
                     try {
                         surfaceHolder.unlockCanvasAndPost(canvas);
-                    } catch (Exception ignored) {}
+                    } catch (Throwable ignored) {}
                 }
             }
         }
