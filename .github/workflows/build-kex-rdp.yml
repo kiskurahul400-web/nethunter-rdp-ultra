@@ -49,10 +49,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Generate Gradle Wrapper
-        run: |
-          gradle wrapper --gradle-version 8.5
-          chmod +x gradlew
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x gradlew
 
       - name: Compile Android APK (Heavy Cloud Compilation)
         run: |
