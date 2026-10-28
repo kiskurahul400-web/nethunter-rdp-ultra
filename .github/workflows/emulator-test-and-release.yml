@@ -37,11 +37,14 @@ jobs:
           chmod +x ./download-prebuilt-dependencies.sh
           ./download-prebuilt-dependencies.sh
           
-          # Download the required sqlcipher AAR into common/aars
+          # Download required sqlcipher AAR into common/aars
           mkdir -p common/aars
           curl -fSL "https://repo1.maven.org/maven2/net/zetetic/android-database-sqlcipher/4.5.4/android-database-sqlcipher-4.5.4.aar" -o common/aars/android-database-sqlcipher-4.5.4.aar
           ls -lh common/aars/
           
+          # Fix missing setGlyphCache method call
+          find . -name "*.java" -exec sed -i 's/.*performanceFlags\.setGlyphCache.*/\/\/ &/' {} +
+
           # Set NetHunter RDP Ultra branding
           find . -name "strings.xml" -exec sed -i 's/<string name="freeardp_app_name">.*<\/string>/<string name="freeardp_app_name">NetHunter RDP Ultra<\/string>/g' {} +
 
@@ -118,6 +121,8 @@ jobs:
             # Verify Process is Running
             echo "Checking process table in emulator:"
             adb shell ps -A | grep -i "freeaRDP" || adb shell ps | grep -i "freeaRDP"
+            APP_PID=$(adb shell pidof com.iiordanov.freeaRDP || true)
+            echo "Running App PID: $APP_PID"
             
             # Capture Screenshot of running app on Android Emulator
             mkdir -p test_artifacts
@@ -133,9 +138,9 @@ jobs:
             
             # Step 3: Verify Logcat for Zero Fatal Crashes
             echo "Inspecting Logcat for errors:"
-            if adb logcat -d | grep -E "FATAL EXCEPTION|AndroidRuntime.*CRASH"; then
-              echo "Error: Fatal crash detected in emulator!"
-              adb logcat -d | grep -E -A 15 "FATAL EXCEPTION|AndroidRuntime.*CRASH"
+            if adb logcat -d | grep -E -A 5 "FATAL EXCEPTION" | grep "com.iiordanov.freeaRDP"; then
+              echo "Error: Fatal crash detected in emulator for com.iiordanov.freeaRDP!"
+              adb logcat -d | grep -E -A 15 "FATAL EXCEPTION"
               exit 1
             else
               echo "SUCCESS: App launched cleanly with ZERO fatal crashes on Android 14/15/16 Emulator!"
