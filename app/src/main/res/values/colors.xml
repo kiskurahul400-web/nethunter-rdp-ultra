@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Kali / NetHunter Cyber Palette -->
+    <color name="kali_primary">#238636</color>
+    <color name="kali_primary_dark">#196c2e</color>
+    <color name="kali_accent">#00ffcc</color>
+    <color name="kali_cyan">#2f81f7</color>
+    <color name="kali_danger">#f85149</color>
+    <color name="kali_warning">#d29922</color>
+
+    <!-- Dark UI Backgrounds -->
+    <color name="bg_dark">#0d1117</color>
+    <color name="bg_card">#161b22</color>
+    <color name="bg_input">#21262d</color>
+    <color name="border_color">#30363d</color>
+
+    <!-- Typography -->
+    <color name="text_primary">#f0f6fc</color>
+    <color name="text_secondary">#8b949e</color>
+    <color name="text_hint">#6e7681</color>
+
+    <!-- SuperBar Hacker Overlay -->
+    <color name="superbar_bg_color">#E6111827</color>
+    <color name="key_normal_bg">#2D3748</color>
+    <color name="key_active_bg">#00E5FF</color>
+    <color name="key_pressed_bg">#4A5568</color>
+    <color name="key_text_color">#F7FAFC</color>
+    <color name="key_active_text_color">#0A0E17</color>
+</resources>

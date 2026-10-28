@@ -1,0 +1,96 @@
+name: Build NetHunter RDP Ultra APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type (Release or Debug)'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+          - Release
+          - Debug
+  push:
+    branches: [ main, master ]
+    tags:
+      - 'v*'
+
+jobs:
+  build-apk:
+    name: Build 60FPS Hardware RDP Client
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26d
+
+      - name: Cache Gradle Caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Generate Gradle Wrapper
+        run: |
+          gradle wrapper --gradle-version 8.5
+          chmod +x gradlew
+
+      - name: Compile Android APK (Heavy Cloud Compilation)
+        run: |
+          ./gradlew assembleRelease --stacktrace --no-daemon --parallel
+
+      - name: Sign & Align APK
+        run: |
+          sudo apt-get update && sudo apt-get install -y apksigner zipalign
+          
+          # Generate one-time production signing keystore
+          keytool -genkeypair -v -keystore release.keystore -alias nethunterrdp -keyalg RSA -keysize 2048 -validity 10000 -storepass nethunter123 -keypass nethunter123 -dname "CN=NetHunterRDP, OU=Offsec, O=Security, L=Cyber, S=Global, C=US"
+          
+          mkdir -p output_apks
+          for apk in $(find app/build/outputs/apk/release -name "*.apk"); do
+            zipalign -v -p 4 "$apk" "output_apks/aligned_app.apk"
+            apksigner sign --ks release.keystore --ks-pass pass:nethunter123 --key-pass pass:nethunter123 --out "output_apks/NetHunter-RDP-Ultra-arm64.apk" "output_apks/aligned_app.apk"
+          done
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NetHunter-RDP-Ultra-Release-APK
+          path: output_apks/NetHunter-RDP-Ultra-arm64.apk
+
+      - name: Create GitHub Release (If Tagged)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: output_apks/NetHunter-RDP-Ultra-arm64.apk
+          name: "NetHunter RDP Ultra ${{ github.ref_name }}"
+          body: |
+            ## 🚀 NetHunter RDP Ultra: 60 FPS Optimized Client
+            
+            ### ✨ Features:
+            - **60 FPS Hardware-Accelerated Surface Pipeline**: Zero-copy rendering.
+            - **NetHunter KeX Touchpad Mode**: Precision relative cursor, tap-to-click, 2-finger scroll.
+            - **Floating Hacker SuperBar**: Instant Esc, Tab, Ctrl, Alt, Shift, Win, F-keys, CAD.
+            - **Input Coalescing**: 60Hz rate-limited pointer events to eliminate mouse lag.
+            - **Socket Tuning**: TCP_NODELAY enabled for instantaneous responsiveness.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

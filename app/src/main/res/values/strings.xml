@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NetHunter RDP Ultra</string>
+    <string name="title_connect">Connect to Windows RDP</string>
+    <string name="subtitle_connect">60 FPS Hardware-Accelerated Remote Desktop</string>
+    
+    <string name="label_host">Host / IP Address</string>
+    <string name="hint_host">e.g. 192.168.1.100 or mypc.local</string>
+    <string name="label_port">RDP Port</string>
+    <string name="default_port">3389</string>
+    <string name="label_user">Username</string>
+    <string name="hint_user">Windows Username</string>
+    <string name="label_pass">Password</string>
+    <string name="hint_pass">Windows Password</string>
+    <string name="label_domain">Domain (Optional)</string>
+    <string name="hint_domain">WORKGROUP or Domain</string>
+
+    <!-- Performance Presets -->
+    <string name="label_perf_preset">Performance Optimization Preset</string>
+    <string name="preset_ultra">Ultra 60FPS LAN (H.264 AVC444 + Zero-Copy)</string>
+    <string name="preset_balanced">Balanced Remote (RemoteFX + Adaptive Bitrate)</string>
+    <string name="preset_low_bandwidth">Low Bandwidth (High Compression)</string>
+
+    <!-- Input Modes -->
+    <string name="label_input_mode">Input Control Mode</string>
+    <string name="mode_touchpad">KeX Touchpad Mouse (Smooth Pointer)</string>
+    <string name="mode_direct">Direct Touch &amp; Pan</string>
+
+    <!-- Actions -->
+    <string name="btn_connect">CONNECT ➔</string>
+    <string name="btn_save">Save Profile</string>
+    <string name="btn_clear">Clear</string>
+    <string name="connecting_msg">Establishing 60 FPS RDP Session...</string>
+    <string name="disconnect_confirm">Disconnect active RDP session?</string>
+</resources>

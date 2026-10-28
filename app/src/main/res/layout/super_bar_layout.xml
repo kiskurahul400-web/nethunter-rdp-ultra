@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/superbar_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/superbar_bg"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="4dp">
+
+    <!-- Drag Handle / Grip -->
+    <TextView
+        android:id="@+id/btn_drag_handle"
+        android:layout_width="16dp"
+        android:layout_height="32dp"
+        android:text="⋮⋮"
+        android:textColor="#718096"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:layout_marginEnd="4dp" />
+
+    <!-- Hacker Modifier Keys (KeX Standard) -->
+    <Button
+        android:id="@+id/btn_esc"
+        style="@style/SuperBarKey"
+        android:text="ESC" />
+
+    <Button
+        android:id="@+id/btn_tab"
+        style="@style/SuperBarKey"
+        android:text="TAB" />
+
+    <Button
+        android:id="@+id/btn_ctrl"
+        style="@style/SuperBarKey"
+        android:text="CTRL" />
+
+    <Button
+        android:id="@+id/btn_alt"
+        style="@style/SuperBarKey"
+        android:text="ALT" />
+
+    <Button
+        android:id="@+id/btn_shift"
+        style="@style/SuperBarKey"
+        android:text="SHIFT" />
+
+    <Button
+        android:id="@+id/btn_win"
+        style="@style/SuperBarKey"
+        android:text="WIN"
+        android:textColor="@color/kali_accent" />
+
+    <!-- Shortcuts / Extra Actions -->
+    <Button
+        android:id="@+id/btn_del"
+        style="@style/SuperBarKey"
+        android:text="DEL" />
+
+    <Button
+        android:id="@+id/btn_taskmgr"
+        style="@style/SuperBarKey"
+        android:text="CAD"
+        android:textColor="@color/kali_danger"
+        android:textSize="9sp" />
+
+    <!-- Navigation / Arrows -->
+    <Button
+        android:id="@+id/btn_up"
+        style="@style/SuperBarKey"
+        android:text="▲" />
+
+    <Button
+        android:id="@+id/btn_down"
+        style="@style/SuperBarKey"
+        android:text="▼" />
+
+    <Button
+        android:id="@+id/btn_left"
+        style="@style/SuperBarKey"
+        android:text="◀" />
+
+    <Button
+        android:id="@+id/btn_right"
+        style="@style/SuperBarKey"
+        android:text="▶" />
+
+    <!-- Soft Keyboard Toggle -->
+    <Button
+        android:id="@+id/btn_toggle_kbd"
+        style="@style/SuperBarKey"
+        android:text="⌨"
+        android:textColor="@color/kali_cyan"
+        android:textSize="14sp" />
+
+    <!-- Minimize / Collapse Bar -->
+    <Button
+        android:id="@+id/btn_collapse"
+        style="@style/SuperBarKey"
+        android:text="✕"
+        android:textColor="#A0AEC0" />
+
+</LinearLayout>

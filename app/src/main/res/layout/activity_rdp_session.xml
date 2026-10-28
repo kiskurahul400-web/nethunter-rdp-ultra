@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/session_root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:keepScreenOn="true">
+
+    <!-- 60 FPS Hardware-Accelerated Surface View -->
+    <com.offsec.nethunter.rdp.engine.HardwareSurfaceView
+        android:id="@+id/rdp_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <!-- KeX Virtual Mouse Pointer Cursor -->
+    <ImageView
+        android:id="@+id/virtual_cursor_view"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/cursor_pointer"
+        android:visibility="gone"
+        android:elevation="10dp" />
+
+    <!-- Draggable Floating SuperBar Overlay -->
+    <FrameLayout
+        android:id="@+id/superbar_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="16dp"
+        android:elevation="20dp">
+        <include layout="@layout/super_bar_layout" />
+    </FrameLayout>
+
+    <!-- Minimized Floating Pill to re-open SuperBar -->
+    <Button
+        android:id="@+id/btn_restore_superbar"
+        android:layout_width="48dp"
+        android:layout_height="32dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="12dp"
+        android:background="@drawable/superbar_bg"
+        android:text="⌨"
+        android:textColor="@color/kali_accent"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:elevation="20dp" />
+
+</FrameLayout>
