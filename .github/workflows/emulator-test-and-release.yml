@@ -47,12 +47,18 @@ jobs:
           grep -C 3 "applicationId" freeaRDP-app/build.gradle
           
           # 2. Replace App Icons with Official Kali NetHunter Dragon Logo
-          find freeaRDP-app bVNC -name "icon_ardp.png" -exec cp ../branding/nethunter_icon_main.png {} +
-          find freeaRDP-app bVNC -name "banner_ardp.png" -exec cp ../branding/nethunter_icon_main.png {} +
-          find freeaRDP-app bVNC -name "icon.png" -exec cp ../branding/nethunter_icon_main.png {} +
-          find freeaRDP-app -path "*hdpi*" -name "icon_ardp.png" -exec cp ../branding/nethunter_icon_hdpi.png {} + 2>/dev/null || true
-          find freeaRDP-app -path "*mdpi*" -name "icon_ardp.png" -exec cp ../branding/nethunter_icon_mdpi.png {} + 2>/dev/null || true
-          find freeaRDP-app -path "*xhdpi*" -name "icon_ardp.png" -exec cp ../branding/nethunter_icon_xhdpi.png {} + 2>/dev/null || true
+          for f in $(find freeaRDP-app bVNC -name "icon_ardp.png" -o -name "banner_ardp.png" -o -name "icon.png"); do
+            cp ../branding/nethunter_icon_main.png "$f"
+          done
+          for f in $(find freeaRDP-app -path "*hdpi*" -name "icon_ardp.png"); do
+            cp ../branding/nethunter_icon_hdpi.png "$f" || true
+          done
+          for f in $(find freeaRDP-app -path "*mdpi*" -name "icon_ardp.png"); do
+            cp ../branding/nethunter_icon_mdpi.png "$f" || true
+          done
+          for f in $(find freeaRDP-app -path "*xhdpi*" -name "icon_ardp.png"); do
+            cp ../branding/nethunter_icon_xhdpi.png "$f" || true
+          done
 
           # 3. Rebrand Strings to Kali NetHunter RDP
           find . -name "strings.xml" -exec sed -i 's/<string name="freeardp_app_name">.*<\/string>/<string name="freeardp_app_name">Kali NetHunter RDP<\/string>/g' {} +
