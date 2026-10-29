@@ -150,22 +150,23 @@ jobs:
           files: |
             output_apks/*.apk
             test_artifacts/*.png
-          tag_name: "v2.2.0-nethunter-ultra"
-          name: "Kali NetHunter RDP Ultra v2.2.0 (Auto-Rotate & Screen Auto-Adjustment)"
+          tag_name: "v2.3.0-nethunter-ultra"
+          name: "Kali NetHunter RDP Ultra v2.3.0 (Dynamic Auto-Desktop Rotation)"
           body: |
-            ## 🐉 Kali NetHunter RDP Ultra v2.2.0 (Auto-Rotate & Screen Auto-Adjustment)
+            ## 🐉 Kali NetHunter RDP Ultra v2.3.0 (Dynamic Auto-Desktop Rotation)
 
-            This update introduces **sensor-based full auto-rotation** and **automatic dynamic screen resolution & fit-to-screen adjustment**, delivering the seamless experience of modern desktop RDP apps on Android 14/15/16 devices.
+            This update delivers **Dynamic Auto-Desktop Rotation (Landscape <-> Portrait)** and **Instant Resolution Negotiation**, ensuring that rotating your Android phone automatically switches the remote Windows desktop orientation seamlessly without session loss.
 
             ### 📱 Download Links:
             - **`NetHunter-RDP-Ultra-arm64.apk`**: High-performance 64-bit build optimized for ARM64 Android devices (`com.offsec.nethunter.rdp`).
             - **`NetHunter-RDP-Ultra-Universal.apk`**: Universal build containing all ABIs (`arm64-v8a`, `armeabi-v7a`, `x86_64`, `x86`).
 
-            ### 🔄 New Auto-Rotating & Screen Auto-Adjustment:
-            - **Sensor-Based Auto-Rotation (`fullSensor`):** Seamless orientation changes between Portrait and Landscape (in all 4 directions) based on physical gyro/accelerometer, without disconnecting the RDP session or recreating the activity.
-            - **Screen Auto-Adjustment / Smart Sizing (`FIT_CENTER`):** The remote desktop canvas automatically scales and centers dynamically to fit your exact screen width and height upon connecting and upon rotation. No clipped borders, no horizontal overflow.
-            - **Display-Matched Native Geometry:** Automatically connects Windows RDP at your device's native widescreen display resolution (`RDP_GEOM_SELECT_NATIVE_LANDSCAPE`), giving 1:1 crisp text and high-DPI rendering.
-            - **Instant Viewport Re-fitting:** Automatic geometry recalculation triggered on any screen size or multi-window change.
+            ### 🔄 Dynamic Auto-Desktop Rotation & Orientation Switching:
+            - **Dynamic Auto-Desktop Rotation:** Rotating the phone from Portrait to Landscape switches the remote Windows desktop resolution automatically into widescreen Landscape mode (`Math.max(W, H)` x `Math.min(W, H)`), filling the landscape display 100% border-to-border.
+            - **Seamless Portrait Mode:** Rotating back to Portrait automatically transitions the Windows desktop back to high-aspect Portrait format (`Math.min(W, H)` x `Math.max(W, H)`).
+            - **Zero Session Data Loss:** All running Windows programs, browser tabs, terminals, and work files remain active during orientation changes without needing to re-login.
+            - **FreeRDP Dynamic Resolution (`/dynamic-resolution`):** Client-side negotiation enables instantaneous desktop layout adaptation on supported hosts.
+            - **Smart Sizing & Auto-Fitting (`FIT_CENTER`):** Eliminates letterboxing and black bars by dynamically adapting resolution to the exact physical display aspect ratio.
 
             ### ⚡ Windows 60 FPS Hardware-Accelerated Protocol Engine:
             - **RemoteFX & RDPGFX (AVC444 / H.264)**: Native hardware video decode via FFmpeg `libavcodec.so` for silky-smooth 60 FPS streaming on Windows 10/11.
