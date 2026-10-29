@@ -6,22 +6,26 @@ import re
 def apply_patches():
     print("=== Applying Kali NetHunter RDP Ultra Patches ===")
     
-    # 1. Patch RdpCommunicator.java for 60 FPS RemoteFX, GFX H.264, Audio & Dynamic Settings
+    # 1. Patch RdpCommunicator.java for Ultra-Low Bandwidth, Client-Side Caching & Dynamic Settings
     rdp_comm_path = 'remoteClientLib/src/main/java/com/undatech/opaque/RdpCommunicator.java'
     if os.path.exists(rdp_comm_path):
         with open(rdp_comm_path, 'r') as f:
             content = f.read()
-        content = content.replace('performanceFlags.setRemoteFX(enableRemoteFx);', 'performanceFlags.setRemoteFX(true);')
-        content = content.replace('performanceFlags.setGfx(enableGfx);', 'performanceFlags.setGfx(true);')
-        content = content.replace('performanceFlags.setH264(enableGfxH264);', 'performanceFlags.setH264(true);')
-        content = content.replace('performanceFlags.setWallpaper(wallpaper);', 'performanceFlags.setWallpaper(true);')
+        # In Ultra-Low Bandwidth mode, disable video streaming frames (RemoteFX / GFX / H264)
+        # so RDP switches to lightweight GDI vector drawing orders and client-side bitmap/glyph caching!
+        content = content.replace('performanceFlags.setRemoteFX(enableRemoteFx);', 'performanceFlags.setRemoteFX(false);')
+        content = content.replace('performanceFlags.setGfx(enableGfx);', 'performanceFlags.setGfx(false);')
+        content = content.replace('performanceFlags.setH264(enableGfxH264);', 'performanceFlags.setH264(false);')
+        # Do not stream desktop wallpaper over the network; client renders local high-res XFCE desktop directly!
+        content = content.replace('performanceFlags.setWallpaper(wallpaper);', 'performanceFlags.setWallpaper(false);')
         content = content.replace('performanceFlags.setFontSmoothing(fontSmoothing);', 'performanceFlags.setFontSmoothing(true);')
-        content = content.replace('performanceFlags.setDesktopComposition(desktopComposition);', 'performanceFlags.setDesktopComposition(true);')
-        content = content.replace('performanceFlags.setFullWindowDrag(fullWindowDrag);', 'performanceFlags.setFullWindowDrag(true);')
-        content = content.replace('performanceFlags.setMenuAnimations(menuAnimations);', 'performanceFlags.setMenuAnimations(true);')
-        content = content.replace('performanceFlags.setTheming(theming);', 'performanceFlags.setTheming(true);')
+        content = content.replace('performanceFlags.setDesktopComposition(desktopComposition);', 'performanceFlags.setDesktopComposition(false);')
+        # Draw outline on window drag instead of flooding video frames over the wire
+        content = content.replace('performanceFlags.setFullWindowDrag(fullWindowDrag);', 'performanceFlags.setFullWindowDrag(false);')
+        content = content.replace('performanceFlags.setMenuAnimations(menuAnimations);', 'performanceFlags.setMenuAnimations(false);')
+        content = content.replace('performanceFlags.setTheming(theming);', 'performanceFlags.setTheming(false);')
         content = content.replace('advancedSettings.setRedirectSound(redirectSound);', 'advancedSettings.setRedirectSound(1);')
-        content = re.sub(r'.*performanceFlags\.setGlyphCache.*', '// setGlyphCache disabled', content)
+        content = re.sub(r'.*performanceFlags\.setGlyphCache.*', 'performanceFlags.setGlyphCache(true);', content)
 
         old_save_settings = """    private void saveConnectionSettings(int width, int height, int bpp) {
         connection.setRdpResType(RemoteClientLibConstants.RDP_GEOM_SELECT_CUSTOM);
@@ -47,7 +51,7 @@ def apply_patches():
 
         with open(rdp_comm_path, 'w') as f:
             f.write(content)
-        print("[✓] Patched 60 FPS performance flags into RdpCommunicator.java")
+        print("[✓] Patched Ultra-Low Bandwidth caching & performance flags into RdpCommunicator.java")
 
     # 2. Patch Manifests for fullSensor & seamless configChanges
     manifest1 = "freeaRDP-app/src/main/AndroidManifest.xml"
@@ -378,19 +382,33 @@ def apply_patches():
             f.write(rc)
         print("[✓] Patched RemoteCanvas.java for dynamic auto-desktop geometry")
 
-    # 5. Patch LibFreeRDP.java for /dynamic-resolution flag
+    # 5. Patch LibFreeRDP.java for Ultra-Low Bandwidth Caching & /dynamic-resolution
     lfrdp_path = "remoteClientLib/jni/libs/deps/FreeRDP/client/Android/Studio/freeRDPCore/src/main/java/com/freerdp/freerdpcore/services/LibFreeRDP.java"
     if os.path.exists(lfrdp_path):
         with open(lfrdp_path, "r") as f:
             lfc = f.read()
+
         target_size = 'args.add(\n\t\t    String.format("/size:%dx%d", screenSettings.getWidth(), screenSettings.getHeight()));'
-        if target_size in lfc:
+        if target_size in lfc and '/dynamic-resolution' not in lfc:
             lfc = lfc.replace(target_size, target_size + '\n\t\targs.add("/dynamic-resolution");')
-        if 'args.add("/gdi:sw");' in lfc:
-            lfc = lfc.replace('args.add("/gdi:sw");', 'args.add("/gdi:sw");\n\t\targs.add("/dynamic-resolution");')
+
+        cache_switches = """\t\targs.add("/dynamic-resolution");
+\t\targs.add("+bitmap-cache");
+\t\targs.add("+glyph-cache");
+\t\targs.add("+offscreen-cache");
+\t\targs.add("+compression");
+\t\targs.add("/compression-level:2");
+\t\targs.add("/cache:codec:rfx,codec:nsc");"""
+
+        if 'args.add("/gdi:sw");' in lfc and '+bitmap-cache' not in lfc:
+            lfc = lfc.replace('args.add("/gdi:sw");', 'args.add("/gdi:sw");\n' + cache_switches)
+
+        lfc = lfc.replace('args.add(addFlag("glyph-cache", false));', 'args.add(addFlag("glyph-cache", true));')
+        lfc = lfc.replace('args.add(addFlag("bitmap-cache", false));', 'args.add(addFlag("bitmap-cache", true));')
+
         with open(lfrdp_path, "w") as f:
             f.write(lfc)
-        print("[✓] Patched LibFreeRDP.java for /dynamic-resolution")
+        print("[✓] Patched LibFreeRDP.java for Ultra-Low Bandwidth persistent caching & dynamic resolution")
 
     # 6. Patch ConnectionSettings.java: default to FIT_CENTER (Fit to screen) and AUTO geometry
     cs_path = "bVNC/src/main/java/com/undatech/opaque/ConnectionSettings.java"
@@ -472,6 +490,73 @@ def apply_patches():
         with open(str_path, "w") as f:
             f.write(s)
         print("[✓] Patched strings.xml for rdp_geometry")
+
+    # 10. Patch UltraCompactBitmapData.java: Render embedded local NetHunter XFCE desktop image
+    ucb_path = "bVNC/src/main/java/com/iiordanov/bVNC/UltraCompactBitmapData.java"
+    if os.path.exists(ucb_path):
+        with open(ucb_path, "r") as f:
+            ucb = f.read()
+        target_canvas = "memGraphics = new Canvas(mbitmap);\n        drawable.startDrawing();"
+        replacement_canvas = """memGraphics = new Canvas(mbitmap);
+        try {
+            if (c != null && c.getContext() != null) {
+                android.content.Context ctx = c.getContext();
+                int resId = ctx.getResources().getIdentifier("nethunter_xfce_desktop", "drawable", ctx.getPackageName());
+                if (resId != 0) {
+                    Bitmap localBg = android.graphics.BitmapFactory.decodeResource(ctx.getResources(), resId);
+                    if (localBg != null) {
+                        android.graphics.Rect src = new android.graphics.Rect(0, 0, localBg.getWidth(), localBg.getHeight());
+                        android.graphics.Rect dst = new android.graphics.Rect(0, 0, bitmapwidth, bitmapheight);
+                        memGraphics.drawBitmap(localBg, src, dst, null);
+                        localBg.recycle();
+                    }
+                }
+            }
+        } catch (Throwable ignored) {}
+        drawable.startDrawing();"""
+        if target_canvas in ucb:
+            ucb = ucb.replace(target_canvas, replacement_canvas)
+            with open(ucb_path, "w") as f:
+                f.write(ucb)
+            print("[✓] Patched UltraCompactBitmapData.java with embedded XFCE desktop canvas")
+
+    # 11. Patch ConnectionLoader.java: Pre-populate Local NetHunter Desktop (Offline) & Remote Ultra-Cache RDP
+    cl_path = "bVNC/src/main/java/com/undatech/opaque/util/ConnectionLoader.java"
+    if os.path.exists(cl_path):
+        with open(cl_path, "r") as f:
+            cl = f.read()
+        target_empty = """            if (connections.isEmpty()) {
+                Log.i(TAG, "No connections in the database");
+            } else {"""
+        replacement_empty = """            if (connections.isEmpty()) {
+                Log.i(TAG, "No connections in the database, populating defaults");
+                try {
+                    ConnectionBean localConn = new ConnectionBean(appContext);
+                    localConn.setNickname("🐉 Local NetHunter Desktop (Offline 0 MB)");
+                    localConn.setAddress("127.0.0.1");
+                    localConn.setPort(5901);
+                    localConn.setUserName("kali");
+                    localConn.save(appContext);
+                    connections.add(localConn);
+
+                    ConnectionBean remoteConn = new ConnectionBean(appContext);
+                    remoteConn.setNickname("🌐 Remote RDP (Ultra-Cache Low Bandwidth)");
+                    remoteConn.setAddress("192.168.1.100");
+                    remoteConn.setPort(3389);
+                    remoteConn.setUserName("Administrator");
+                    remoteConn.setDesktopBackground(false);
+                    remoteConn.save(appContext);
+                    connections.add(remoteConn);
+                } catch (Throwable t) {
+                    Log.e(TAG, "Failed to create default profiles", t);
+                }
+            }
+            if (true) {"""
+        if target_empty in cl:
+            cl = cl.replace(target_empty, replacement_empty)
+            with open(cl_path, "w") as f:
+                f.write(cl)
+            print("[✓] Patched ConnectionLoader.java with default Local NetHunter & Ultra-Cache profiles")
 
     print("=== All NetHunter Patches Applied Successfully! ===")
 
