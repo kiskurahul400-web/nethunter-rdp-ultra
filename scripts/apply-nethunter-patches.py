@@ -25,7 +25,7 @@ def apply_patches():
         content = content.replace('performanceFlags.setMenuAnimations(menuAnimations);', 'performanceFlags.setMenuAnimations(false);')
         content = content.replace('performanceFlags.setTheming(theming);', 'performanceFlags.setTheming(false);')
         content = content.replace('advancedSettings.setRedirectSound(redirectSound);', 'advancedSettings.setRedirectSound(1);')
-        content = re.sub(r'.*performanceFlags\.setGlyphCache.*', 'performanceFlags.setGlyphCache(true);', content)
+        content = re.sub(r'.*performanceFlags\.setGlyphCache.*', '// setGlyphCache disabled in wrapper, enabled natively via +glyph-cache', content)
 
         old_save_settings = """    private void saveConnectionSettings(int width, int height, int bpp) {
         connection.setRdpResType(RemoteClientLibConstants.RDP_GEOM_SELECT_CUSTOM);
